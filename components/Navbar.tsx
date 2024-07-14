@@ -15,8 +15,8 @@ const Navbar = () => {
           </div>
           <div className="hidden md:block">
             <div className="ml-10 flex items-center space-x-4">
-              <NavLink href="/anime">Anime</NavLink>
-              <NavLink href="/manga">Manga</NavLink>
+              <NavLink href="/browse">Browse</NavLink>
+              <NavLink href="/trending">Trending</NavLink>
               <NavLink href="/community">Community</NavLink>
             </div>
           </div>

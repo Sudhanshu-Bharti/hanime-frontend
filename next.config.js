@@ -1,7 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['images.ctfassets.net'],
+    domains: ['images.ctfassets.net' ,
+        'iili.io', 'cdn.discordapp.com',
+        "static-assets-44d.pages.dev"
+    ],
+              
   },
   api: {
     bodyParser: false,
