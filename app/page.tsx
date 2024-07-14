@@ -7,24 +7,39 @@ export const dynamic = 'force-dynamic'
 
 export default function Home() {
   return (
-    <main className="relative flex min-h-screen flex-col items-center justify-center">
+    <main className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <header className="text-center mb-16">
+          <h1 className="text-4xl md:text-6xl font-extrabold mb-4">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600">
+               Hanime Hub
+            </span>
+          </h1>
+          <p className="text-xl text-gray-400">Discover your next favorite hentai</p>
+        </header>
 
-      <h1 className="pt-4 pb-8 bg-gradient-to-br from-black via-[#171717] to-[#575757] bg-clip-text text-left text-2xl tracking-tight text-transparent md:text-4xl font-bold">
-		    Recent Hits </h1>
-      <Recent/>
-      <h1 className="pt-4 pb-8 bg-gradient-to-br from-black via-[#171717] to-[#575757] bg-clip-text text-left text-2xl tracking-tight text-transparent md:text-4xl font-bold">
-        NewestAnime </h1>
-      <NewestAnime/>
-      <h1 className="pt-4 pb-8 bg-gradient-to-br from-black via-[#171717] to-[#575757] bg-clip-text text-left text-2xl tracking-tight text-transparent md:text-4xl font-bold">
-        Trending </h1>
-      <Trending/>
-      
-      <div className="flex justify-center space-x-5 pt-10 mt-10 border-t border-gray-300 w-full max-w-xl text-gray-600">
-			{/* <Browse/> */}
-      </div>
-      <div className="sm:absolute sm:bottom-0 w-full px-20 py-10 flex justify-between">
-      
+        <div className="space-y-24">
+          <Section title="Recent Hits" Component={Recent} />
+          <Section title="Newest Anime" Component={NewestAnime} />
+          <Section title="Trending Now" Component={Trending} />
+        </div>
+
+        
       </div>
     </main>
   )
 }
+
+function Section({ title, Component } : { title: string, Component: any }) {
+  return (
+    <section>
+      <h2 className="text-3xl font-bold mb-8">
+        <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-emerald-400">
+          {title}
+        </span>
+      </h2>
+      <Component />
+    </section>
+  )
+}
+
