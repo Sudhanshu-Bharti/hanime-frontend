@@ -1,5 +1,5 @@
 import prisma from '@/lib/prisma'
-import { timeAgo } from '@/lib/utils'
+
 import Image from 'next/image'
 import RefreshButton from './refresh-button'
 
@@ -38,7 +38,7 @@ export default async function Table() {
                 <p className="text-sm text-gray-500">{user.email}</p>
               </div>
             </div>
-            <p className="text-sm text-gray-500">{timeAgo(user.createdAt)}</p>
+            {/* <p className="text-sm text-gray-500">{user.createdAt}</p> */}
           </div>
         ))}
       </div>

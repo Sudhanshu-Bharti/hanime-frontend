@@ -3,22 +3,10 @@ import { NextRequest, NextResponse } from 'next/server'
 function isValidUrl(urlString: string) {
   try {
     const url = new URL(urlString);
-    console.log("url nn:", url);
+    // console.log("url nn:", url);
     return true;
   } catch (e) {
     return false;
-  }
-}
-
-// Handle OPTIONS requests
-export function middleware(req: NextRequest) {
-  if (req.method === 'OPTIONS') {
-    const headers = new Headers({
-      'Access-Control-Allow-Origin': '*', // Specify allowed origins in production
-      'Access-Control-Allow-Methods': 'GET, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type', // Specify other headers if needed
-    });
-    return new NextResponse(null, { headers });
   }
 }
 
