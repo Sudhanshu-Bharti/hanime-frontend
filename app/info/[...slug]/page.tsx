@@ -63,12 +63,7 @@ const Page: React.FC<PageProps> = ({ params }) => {
             params={[params.slug]}
           />
         </section>
-        <div className="mt-8 bg-gray-800 p-4 rounded-lg">
-          <h2 className="text-xl font-semibold mb-2 text-purple-300">About this Anime</h2>
-          <p className="text-gray-400">
-            {animeData.info.description || "No description available."}
-          </p>
-        </div>
+        
       </div>
     </div>
   );

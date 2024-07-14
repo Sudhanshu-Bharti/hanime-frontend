@@ -3,10 +3,10 @@ import { Inter } from 'next/font/google'
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 export const metadata = {
-  metadataBase: new URL('https://postgres-prisma.vercel.app'),
-  title: 'Vercel Postgres Demo with Prisma',
+  metadataBase: new URL('https://hanime.vercel.app'),
+  title: 'Hanime - Watch Hentai Online',
   description:
-    'A simple Next.js app with Vercel Postgres as the database and Prisma as the ORM',
+    'Heaven for Hentai lovers! Watch hentai online in high quality. Free download HD hentai. Stream hentai videos free.',
 }
 
 const inter = Inter({

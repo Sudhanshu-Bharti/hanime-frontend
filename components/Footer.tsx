@@ -17,9 +17,8 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold mb-4">Connect</h3>
             <nav className="flex flex-col space-y-2">
-              <NavLink href="https://twitter.com/animehub">Twitter</NavLink>
-              <NavLink href="https://instagram.com/animehub">Instagram</NavLink>
-              <NavLink href="https://discord.gg/animehub">Discord</NavLink>
+              <NavLink href="https://www.reddit.com/user/LowTwo1305/">Reddit</NavLink>
+              <NavLink href="https://discord.gg/sudhanshu_bharti">Discord</NavLink>
             </nav>
           </div>
           <div>
@@ -32,7 +31,7 @@ const Footer = () => {
           </div>
         </div>
         <div className="mt-12 pt-8 border-t border-gray-800 text-center">
-          <p className="text-gray-400">&copy; 2024 Anime Hub. All rights reserved.</p>
+          <p className="text-gray-400">&copy; 2024 Hanime Hub. All rights reserved.</p>
         </div>
       </div>
     </footer>

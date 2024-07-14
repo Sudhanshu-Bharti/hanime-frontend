@@ -8,9 +8,12 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
             <Link href="/" className="text-2xl font-bold">
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600">
-                AnimeSite
+            <div className="flex items-center space-x-2">
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600 text-lg font-bold">
+                Hanime
               </span>
+              <img src="/logo.png" alt="Logo" className="h-8" />
+            </div>
             </Link>
           </div>
           <div className="hidden md:block">

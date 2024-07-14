@@ -139,32 +139,14 @@ const Video: React.FC<PageProps> = ({ params }) => {
         <div className="video-player-container bg-gray-900 min-h-screen text-white p-4 md:p-8">
         {videoData ? (
             <div className="max-w-4xl mx-auto">
+                
                 <h1 className="text-3xl md:text-4xl font-bold mb-4 text-purple-400">{videoData.title}</h1>
                 <Badge variant="outline" className="mb-4 bg-purple-600 text-white">
                     Now Streaming
                 </Badge>
-                <div className="relative rounded-lg overflow-hidden shadow-lg mb-6">
-                    <video
-                        ref={videoRef}
-                        poster={videoData.poster_url}
-                        controls
-                        muted
-                        className="w-full h-auto max-w-full rounded-lg"
-                    >
-                        Your browser does not support the video tag.
-                    </video>
-                    <div className="absolute bottom-4 left-4 right-4 flex justify-between items-center">
-                        <button 
-                            onClick={togglePlay}
-                            className="bg-purple-600 hover:bg-purple-700 text-white p-2 rounded-full transition-colors duration-300"
-                        >
-                            {isPlaying ? <PauseCircle size={24} /> : <PlayCircle size={24} />}
-                        </button>
-                        <div className="relative">
-                            <button className="bg-purple-600 hover:bg-purple-700 text-white p-2 rounded-full transition-colors duration-300">
-                                <Settings size={24} />
-                            </button>
-                            <select 
+                    
+                <div className="relative">
+                        <select 
                                 id="quality-select"
                                 value={selectedQuality} 
                                 onChange={handleQualityChange}
@@ -179,15 +161,25 @@ const Video: React.FC<PageProps> = ({ params }) => {
                                     ))
                                 }
                             </select>
+                            
                         </div>
+                <div className="relative rounded-lg overflow-hidden shadow-lg mb-6">
+                    
+                    <video
+                        ref={videoRef}
+                        poster={videoData.poster_url}
+                        controls
+                        muted
+                        className="w-full h-auto max-w-full rounded-lg"
+                    >
+                        Your browser does not support the video tag.
+                    </video>
+                    
+                    <div className="absolute bottom-4 left-4 right-4 flex justify-between items-center">
+                                    
                     </div>
                 </div>
-                <div className="bg-gray-800 p-4 rounded-lg">
-                    <h2 className="text-xl font-semibold mb-2">About this Anime</h2>
-                    <p className="text-gray-400">
-                        Enjoy this exciting anime episode. Don't forget to check out our other titles!
-                    </p>
-                </div>
+               
             </div>
         ) : (
             <VideoSkeleton/>

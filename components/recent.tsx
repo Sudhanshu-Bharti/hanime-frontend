@@ -60,7 +60,7 @@ const Recent: React.FC = () => {
             <div className="flex flex-row space-x-4 pb-4">
             {recentData.map((item) => (
                 <Card key={item.id} onClick={() => handleCardClick(item.slug)} className="flex-none w-64 h-96 relative overflow-hidden group">
-                    {/* <img src={item.cover_url}  alt={item.name} className="w-full h-full object-cover" /> */}
+                    <img src={item.cover_url}  alt={item.name} className="w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/0 transition-opacity group-hover:opacity-100 opacity-0">
                         <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
                             <h3 className="text-lg font-bold truncate mb-1" title={item.name}>
