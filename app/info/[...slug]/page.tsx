@@ -1,8 +1,10 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { BASE_URL } from "@/lib/utils";
 import InfoComponent from "@/components/info-anime";
-import React, { useEffect, useState } from "react";
 import Video from "@/components/video";
+import { Badge } from "@/components/ui/badge";
 
 interface PageProps {
   params: {
@@ -11,49 +13,63 @@ interface PageProps {
 }
 
 const Page: React.FC<PageProps> = ({ params }) => {
-  const [data, setData] = useState<any>(null);
+  const [animeData, setAnimeData] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchAnimeData = async () => {
       try {
-        const response = await fetch(
-          `http://127.0.0.1:8080/getInfo/${params.slug}`
-        );
-        const result = await response.json();
-        console.log(result);
-        setData(result);
+        const [infoResponse, videoResponse] = await Promise.all([
+          fetch(`${BASE_URL}/getInfo/${params.slug}`),
+          fetch(`${BASE_URL}/getVideo/${params.slug}`)
+        ]);
+
+        if (!infoResponse.ok || !videoResponse.ok) {
+          throw new Error(`HTTP error! status: ${infoResponse.status} ${videoResponse.status}`);
+        }
+
+        const [infoResult, videoResult] = await Promise.all([
+          infoResponse.json(),
+          videoResponse.json()
+        ]);
+
+        setAnimeData({ info: infoResult, video: videoResult });
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching anime data:", error);
+        setError("Failed to load anime data. Please try again later.");
       }
     };
 
-    fetchData();
+    fetchAnimeData();
   }, [params.slug]);
 
-  useEffect(() => {
-    const getVideo = async () => {
-      try {
-        const res = await fetch(`http://127.0.0.1:8080/getVideo/${params.slug}`);
-        const result = await res.json();
-        console.log(result);
-      } catch (error) {
-        console.error("Error fetching video:", error);
-      }
-    };
+  if (error) {
+    return <div className="error-message text-white bg-red-600 p-4 rounded-lg">{error}</div>;
+  }
 
-    getVideo();
-  }, [params.slug]);
+  if (!animeData) return <div className="loading text-white text-center p-8">Loading...</div>;
 
   return (
-    <div className="flex flex-col items-center p-5">
-      {data && <InfoComponent data={data} className="mb-5" />}
-      <section id="video" className="mt-5">
-        <Video
-          //@ts-ignore
-          params={params.slug}
-          className="max-w-full shadow-lg rounded-lg overflow-hidden"
-        />
-      </section>
+    <div className="anime-page-container bg-gray-900 min-h-screen text-white p-4 md:p-8">
+      <div className="max-w-4xl mx-auto mt-16">
+        <h1 className="text-3xl md:text-4xl font-bold mb-4 text-purple-400">{animeData.info.title}</h1>
+        {/* <Badge variant="outline" className="mb-4 bg-purple-600 text-white">
+          {animeData.info.type}
+        </Badge> */}
+        <InfoComponent data={animeData.info} className="mb-8 bg-gray-800 p-4 rounded-lg" />
+        <section id="video" className="mt-8">
+          <h2 className="text-2xl font-semibold mb-4 text-purple-300">Watch Episode</h2>
+          <Video
+            params={[params.slug]}
+          />
+        </section>
+        <div className="mt-8 bg-gray-800 p-4 rounded-lg">
+          <h2 className="text-xl font-semibold mb-2 text-purple-300">About this Anime</h2>
+          <p className="text-gray-400">
+            {animeData.info.description || "No description available."}
+          </p>
+        </div>
+      </div>
     </div>
   );
 };

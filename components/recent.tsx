@@ -1,6 +1,7 @@
 "use client"
 import React, { useState, useEffect } from 'react'
 import { Card } from "@/components/ui/card"
+import { BASE_URL } from '@/lib/utils';
 // import { useRouter } from 'next/navigation';
 
 interface RecentItem {
@@ -25,7 +26,7 @@ const Recent: React.FC = () => {
 
     useEffect(() => {
         const fetchRecent = async () => {
-            const response = await fetch('http://127.0.0.1:8080/getLanding/recent');
+            const response = await fetch(`${BASE_URL}/getLanding/recent`);
             const data: RecentData = await response.json();
             setRecentData(data.results);
         };
@@ -34,7 +35,7 @@ const Recent: React.FC = () => {
 
     const handleCardClick = async (slug: string) => {
         try {
-            const response = await fetch(`http://127.0.0.1:8080/getInfo/${slug}`);
+            const response = await fetch(`${BASE_URL}/getInfo/${slug}`);
             if (!response.ok) {
                 throw new Error('Failed to fetch info');
             }

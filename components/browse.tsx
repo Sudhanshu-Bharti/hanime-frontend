@@ -4,6 +4,7 @@ import { Button } from "./ui/button";
 import Link from "next/link";
 import { Badge } from "./ui/badge";
 import { ArrowRight } from "lucide-react";
+import { BASE_URL } from "@/lib/utils";
 
 interface Tag {
   count: number;
@@ -24,7 +25,7 @@ const Browse = () => {
   useEffect(() => {
     async function fetchTags() {
       try {
-        const response = await fetch("http://127.0.0.1:8080/browse");
+        const response = await fetch(`${BASE_URL}/browse`);
         const data: PageProps = await response.json();
         setTags(data.tags);
       } catch (error) {

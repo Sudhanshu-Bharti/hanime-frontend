@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { Card } from '@/components/ui/card'
 import { DownloadIcon, EyeIcon, FlameIcon, HeartIcon, CalendarIcon } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { BASE_URL } from '@/lib/utils'
 
 interface TrendingItem {
     id: number;
@@ -27,10 +28,10 @@ const TrendingPage = () => {
 
     useEffect(() => {
         const fetchTrending = async () => {
-            const response = await fetch('http://127.0.0.1:8080/getLanding/trending');
+            const response = await fetch(`${BASE_URL}/getLanding/trending`);
             const data = await response.json();
             const trendingWithDetails = await Promise.all(data.results.map(async (item: TrendingItem) => {
-                const detailResponse = await fetch(`http://127.0.0.1:8080/getInfo/${item.slug}`);
+                const detailResponse = await fetch(`${BASE_URL}/getInfo/${item.slug}`);
                 const detailData = await detailResponse.json();
                 // console.log(detailData);
                 

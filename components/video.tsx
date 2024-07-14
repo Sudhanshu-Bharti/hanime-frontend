@@ -4,6 +4,8 @@ import React, { useState, useEffect, useRef } from 'react'
 import { Badge } from './ui/badge';
 import VideoSkeleton from "@/components/videoSkeleton";
 import Hls from 'hls.js';
+import { BASE_URL } from '@/lib/utils';
+import { PauseCircle, PlayCircle, Settings } from 'lucide-react';
 
 interface Stream {
     height: string;
@@ -32,7 +34,7 @@ const Video: React.FC<PageProps> = ({ params }) => {
     useEffect(() => {
         const getVideo = async () => {
             try {
-                const res = await fetch(`http://127.0.0.1:8080/getVideo/${params[0]}`);
+                const res = await fetch(`${BASE_URL}/getVideo/${params[0]}`);
                 if (!res.ok) {
                     throw new Error(`HTTP error! status: ${res.status}`);
                 }
@@ -134,49 +136,63 @@ const Video: React.FC<PageProps> = ({ params }) => {
     }
 
     return (
-        <div className="video-player-container">
-            {videoData ? (
-                <>
-                    <h1 className="text-4xl font-bold mb-4">{videoData.title}</h1>
-                    <Badge variant="destructive">
-                        Watch Now
-                    </Badge>
-                    <div className="mb-4">
-                        <label htmlFor="quality-select" className="mr-2">Select Quality:</label>
-                        <select 
-                            id="quality-select"
-                            value={selectedQuality} 
-                            onChange={handleQualityChange}
-                            className="p-2 border rounded"
+        <div className="video-player-container bg-gray-900 min-h-screen text-white p-4 md:p-8">
+        {videoData ? (
+            <div className="max-w-4xl mx-auto">
+                <h1 className="text-3xl md:text-4xl font-bold mb-4 text-purple-400">{videoData.title}</h1>
+                <Badge variant="outline" className="mb-4 bg-purple-600 text-white">
+                    Now Streaming
+                </Badge>
+                <div className="relative rounded-lg overflow-hidden shadow-lg mb-6">
+                    <video
+                        ref={videoRef}
+                        poster={videoData.poster_url}
+                        controls
+                        muted
+                        className="w-full h-auto max-w-full rounded-lg"
+                    >
+                        Your browser does not support the video tag.
+                    </video>
+                    <div className="absolute bottom-4 left-4 right-4 flex justify-between items-center">
+                        <button 
+                            onClick={togglePlay}
+                            className="bg-purple-600 hover:bg-purple-700 text-white p-2 rounded-full transition-colors duration-300"
                         >
-                            {videoData.streams
-                                .filter(stream => stream.is_guest_allowed)
-                                .map(stream => (
-                                    <option key={stream.height} value={stream.height}>
-                                        {stream.height}p
-                                    </option>
-                                ))
-                            }
-                        </select>
-                    </div>
-                    <div className="video-wrapper">
-                        <video
-                            ref={videoRef}
-                            poster={videoData.poster_url}
-                            controls
-                            className="w-full"
-                        >
-                            Your browser does not support the video tag.
-                        </video>
-                        <div className="controls">
-                            <button onClick={togglePlay}>{isPlaying ? 'Pause' : 'Play'}</button>
+                            {isPlaying ? <PauseCircle size={24} /> : <PlayCircle size={24} />}
+                        </button>
+                        <div className="relative">
+                            <button className="bg-purple-600 hover:bg-purple-700 text-white p-2 rounded-full transition-colors duration-300">
+                                <Settings size={24} />
+                            </button>
+                            <select 
+                                id="quality-select"
+                                value={selectedQuality} 
+                                onChange={handleQualityChange}
+                                className="absolute right-0 bottom-full mb-2 bg-gray-800 text-white p-2 rounded-md shadow-lg"
+                            >
+                                {videoData.streams
+                                    .filter(stream => stream.is_guest_allowed)
+                                    .map(stream => (
+                                        <option key={stream.height} value={stream.height}>
+                                            {stream.height}p
+                                        </option>
+                                    ))
+                                }
+                            </select>
                         </div>
                     </div>
-                </>
-            ) : (
-                <VideoSkeleton/>
-            )}
-        </div>
+                </div>
+                <div className="bg-gray-800 p-4 rounded-lg">
+                    <h2 className="text-xl font-semibold mb-2">About this Anime</h2>
+                    <p className="text-gray-400">
+                        Enjoy this exciting anime episode. Don't forget to check out our other titles!
+                    </p>
+                </div>
+            </div>
+        ) : (
+            <VideoSkeleton/>
+        )}
+    </div>
     )
 }
 

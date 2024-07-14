@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { BASE_URL } from '@/lib/utils';
 
 interface AnimeItem {
   canonical_url: string;
@@ -27,7 +28,7 @@ const AnimeGallery: React.FC = () => {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await fetch('http://127.0.0.1:8080/community_upload');
+        const response = await fetch(`${BASE_URL}/community_upload`);
         const data = await response.json();
         
         if (Array.isArray(data)) {

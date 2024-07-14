@@ -2,6 +2,7 @@
 import { ArrowLeftIcon, ArrowRightIcon, DownloadIcon, EyeIcon, FlameIcon, HeartIcon } from 'lucide-react';
 import React, { useEffect, useState, useRef } from 'react'
 import { Card } from './ui/card';
+import { BASE_URL } from '@/lib/utils';
 
 interface TrendingItem {
     id: number;
@@ -25,7 +26,7 @@ const Trending = () => {
 
     useEffect(() => {
         const fetchNewest = async () => {
-            const response = await fetch('http://127.0.0.1:8080/getLanding/newest');
+            const response = await fetch(`${BASE_URL}/getLanding/newest`);
             const data: TrendingData = await response.json();
             setTrendingData(data.results);
         };
@@ -34,7 +35,9 @@ const Trending = () => {
 
     const handleCardClick = async (slug: string) => {
         try {
-            const response = await fetch(`http://127.0.0.1:8080/getInfo/${slug}`);
+            console.log( process.env.BASE_URL);
+            
+            const response = await fetch(`${BASE_URL}/getInfo/${slug}`);
             if (!response.ok) {
                 throw new Error('Failed to fetch info');
             }
