@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 
 interface AnimeItem {
   canonical_url: string;
@@ -53,12 +55,18 @@ const AnimeGallery: React.FC = () => {
   }
 
   return (
-    <div className="bg-gray-900 min-h-screen text-white p-8">
-      <h1 className="text-4xl font-bold mb-8 text-center text-purple-400">Anime Gallery</h1>
+    <div className="bg-gray-900 min-h-screen text-white p-8 ">
+      <h1 className="text-4xl font-bold mb-8 text-center text-purple-400 mt-12">Anime Gallery</h1>
+        <div className='flex items-center m-4 justify-center' >
+        <Badge variant="default" className='bg-slate-700 text-md' >
+        ⚠️Sorry , The Anime Gallery is not responding because the Hanime server is having trouble connecting with community
+      </Badge>
+        </div>
       {animeData.length === 0 ? (
         <p className="text-center">Loading...</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          
           {animeData.map((item) => (
             <div key={item.id} className="bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300">
               <div className="relative h-64">
@@ -92,9 +100,11 @@ const AnimeGallery: React.FC = () => {
                   href={item.canonical_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-4 inline-block bg-purple-600 text-white px-4 py-2 rounded-full hover:bg-purple-700 transition-colors duration-300"
                 >
+                    <Button className='bg-purple-600 text-white px-4 py-2 rounded-full hover:bg-purple-700 transition-colors duration-300 mt-2' >
+
                   View Original
+                    </Button>
                 </Link>
               </div>
             </div>

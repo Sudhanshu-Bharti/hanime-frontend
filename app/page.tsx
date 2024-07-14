@@ -19,6 +19,7 @@ export default function Home() {
         </header>
 
         <div className="space-y-24">
+          <Section title="Browse" Component={Browse} />
           <Section title="Recent Hits" Component={Recent} />
           <Section title="Newest Anime" Component={NewestAnime} />
           <Section title="Trending Now" Component={Trending} />
