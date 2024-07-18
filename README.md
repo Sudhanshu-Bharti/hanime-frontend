@@ -7,7 +7,7 @@ Welcome to the Hanime Frontend repository! This repository contains the frontend
 To get started with the Hanime Frontend, follow these steps:
 
 1. Clone this repository to your local machine.
-2. Install the necessary dependencies by running `npm install`.
+2. Install the necessary dependencies by running `npm install` or  `pnpm install`
 3. Start the development server by running `npm start`.
 
 ## Features
@@ -20,10 +20,9 @@ To get started with the Hanime Frontend, follow these steps:
 ## Technologies Used
 
 - Next.js
-- Redux
-- CSS Modules
+- tailwindcss
 - Axios
-- React Router
+- typescript
 
 ## Contributing
 
