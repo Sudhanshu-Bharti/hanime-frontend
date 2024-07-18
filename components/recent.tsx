@@ -1,7 +1,9 @@
 "use client"
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Card } from "@/components/ui/card"
 import { BASE_URL } from '@/lib/utils';
+import { Skeleton } from './ui/skeleton';
+import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react';
 // import { useRouter } from 'next/navigation';
 
 interface RecentItem {
@@ -22,13 +24,23 @@ interface RecentData {
 
 const Recent: React.FC = () => {
     const [recentData, setRecentData] = useState<RecentItem[]>([]);
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
+    const [isLoading, setIsLoading] = useState(true);
     // const router = useRouter();
 
     useEffect(() => {
         const fetchRecent = async () => {
-            const response = await fetch(`${BASE_URL}/getLanding/recent`);
-            const data: RecentData = await response.json();
-            setRecentData(data.results);
+            try {
+              setIsLoading(true)
+              const response = await fetch(`${BASE_URL}/getLanding/recent`);
+              const data: RecentData = await response.json();
+              setRecentData(data.results);
+            } catch (error) {
+                console.log('Error fetching recent:', error);
+                
+            } finally {
+              setIsLoading(false)
+            }
         };
         fetchRecent();
     }, []);
@@ -49,18 +61,49 @@ const Recent: React.FC = () => {
             
         catch (error) {
             console.error('Error fetching info:', error);
-        }
+        } 
     };
 
+    const scroll = (direction: 'left' | 'right') => {
+      if (scrollContainerRef.current) {
+          const scrollAmount = direction === 'left' ? -300 : 300;
+          scrollContainerRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+      }
+  };
+
+
+    if (isLoading) {
+        return (
+          <div className='flex flex-row gap-4' >
+          <Skeleton className="w-64 h-96 sm:w-72 animate-pulse" />
+          <Skeleton className="w-64 h-96 sm:w-72 animate-pulse" />
+          <Skeleton className="w-64 h-96 sm:w-72 animate-pulse" />
+          <Skeleton className="w-64 h-96 sm:w-72 animate-pulse" />
+          <Skeleton className="w-64 h-96 sm:w-72 animate-pulse" />
+      </div>
+        );
+    }
 
 
 
     return (
-      <div className="w-full overflow-x-auto">
-            <div className="flex flex-row space-x-4 pb-4">
-            {recentData.map((item) => (
-                <Card key={item.id} onClick={() => handleCardClick(item.slug)} className="flex-none w-64 h-96 relative overflow-hidden group">
-                    <img src={item.cover_url}  alt={item.name} className="w-full h-full object-cover" />
+      <div className="w-full relative">
+        <button 
+          onClick={() => scroll('left')} 
+          className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-gray-800 p-2 rounded-full text-white hover:bg-gray-700 transition-colors"
+        >
+          <ArrowLeftIcon size={24} />
+        </button>
+        <button 
+          onClick={() => scroll('right')} 
+          className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-gray-800 p-2 rounded-full text-white hover:bg-gray-700 transition-colors"
+        >
+          <ArrowRightIcon size={24} />
+        </button>
+        <div ref={scrollContainerRef} className="overflow-x-auto flex flex-row space-x-4 pb-4 scrollbar-hide">
+          {recentData.map((item) => (
+            <Card key={item.id} onClick={() => handleCardClick(item.slug)} className="flex-none lg:w-64 lg:h-96 w-64 h-96  sm:w-16 sm:h-24 relative overflow-hidden group">
+              <img src={item.cover_url}  alt={item.name} className="w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/0 transition-opacity group-hover:opacity-100 opacity-0">
                         <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
                             <h3 className="text-lg font-bold truncate mb-1" title={item.name}>
@@ -87,8 +130,11 @@ const Recent: React.FC = () => {
                             </div>
                         </div>
                     </div>
+                    
                 </Card>
+                
             ))}
+
           </div>
         </div>
     )

@@ -3,6 +3,7 @@ import { ArrowLeftIcon, ArrowRightIcon, DownloadIcon, EyeIcon, FlameIcon, HeartI
 import React, { useEffect, useState, useRef } from 'react'
 import { Card } from './ui/card';
 import { BASE_URL } from '@/lib/utils';
+import { Skeleton } from './ui/skeleton';
 
 interface TrendingItem {
     id: number;
@@ -23,12 +24,21 @@ interface TrendingData {
 const Trending = () => {
     const [trending, setTrendingData] = useState<TrendingItem[]>([]);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
+    const [loading , setLoading] = useState(true);
 
     useEffect(() => {
         const fetchNewest = async () => {
-            const response = await fetch(`${BASE_URL}/getLanding/newest`);
-            const data: TrendingData = await response.json();
-            setTrendingData(data.results);
+            try {
+                setLoading(true)
+                const response = await fetch(`${BASE_URL}/getLanding/newest`);
+                const data: TrendingData = await response.json();
+                setTrendingData(data.results);
+            } catch (error) {
+                console.log('Error fetching newest anime:', error);
+                
+            } finally {
+                setLoading(false)
+            }
         };
         fetchNewest();
     }, []);
@@ -56,8 +66,22 @@ const Trending = () => {
         }
     };
 
+    
+    if (loading) {
+        return (
+          <div className='flex flex-row gap-4' >
+          <Skeleton className="w-64 h-96 sm:w-72 animate-pulse" />
+          <Skeleton className="w-64 h-96 sm:w-72 animate-pulse" />
+          <Skeleton className="w-64 h-96 sm:w-72 animate-pulse" />
+          <Skeleton className="w-64 h-96 sm:w-72 animate-pulse" />
+          <Skeleton className="w-64 h-96 sm:w-72 animate-pulse" />
+      </div>
+        );
+    }
+
+
     return (
-        <div className="relative w-full py-8 bg-gray-900 ">
+        <div className="relative w-full py-8">
             <div className="flex items-center">
                 <button 
                     onClick={() => scroll('left')} 
@@ -97,14 +121,7 @@ const Trending = () => {
                             </div>
                         </Card>
                     ))}
-                    <div className="flex-none w-64 h-96 flex items-center justify-center">
-                        <button 
-                            onClick={() => {/* Handle More click */}} 
-                            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full transition-colors"
-                        >
-                            MORE
-                        </button>
-                    </div>
+
                 </div>
                 <button 
                     onClick={() => scroll('right')} 

@@ -33,9 +33,9 @@ const BrowseSection: React.FC = () => {
   }, []);
 
   return (
-    <div>
-        <div className="bg-gray-900 min-h-screen text-white p-8">
-      <h1 className="text-4xl font-bold mb-8 text-center text-purple-400">Browse Anime</h1>
+    <div >
+        <div className=" bg-gray-900 min-h-screen text-white p-8">
+      <h1 className="mt-8 text-4xl font-bold mb-8 text-center text-purple-400">Browse Anime</h1>
 
       {tags.length === 0 ? (
         <p className="text-center text-lg">Loading tags...</p>

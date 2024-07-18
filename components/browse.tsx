@@ -21,43 +21,54 @@ interface PageProps {
 
 const Browse = () => {
   const [tags, setTags] = useState<Tag[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function fetchTags() {
       try {
+        setIsLoading(true);
         const response = await fetch(`${BASE_URL}/browse`);
         const data: PageProps = await response.json();
         setTags(data.tags);
       } catch (error) {
         console.error("Error fetching tags:", error);
+      } finally {
+        setIsLoading(false);  
+
       }
     }
     fetchTags();
   }, []);
 
   return (
-    <div>
-      {tags.length === 0 ? (
-        <p className="text-center text-lg">Loading tags...</p>
-      ) : (
-        <div className="flex  gap-2">
-          {tags.slice(0, 8).map((tag) => (
+    <div className="p-4">
+      {isLoading ? (
 
-             
-             <div>
-              <Badge variant="default" className="bg-purple-600 text-white px-4 py-2 rounded-full" >
-                {tag.text}
-              </Badge>
-             </div>
-            
+        <div className="flex justify-center items-center h-20">
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-purple-500"></div>
+        </div>
+      ) : tags.length === 0 ? (
+        <p className="text-center text-lg">No tags available</p>
+      ) : (
+        <div className="flex flex-wrap justify-center gap-2 mb-4">
+          {tags.slice(0, 8).map((tag) => (
+            <Badge
+              key={tag.id}
+              variant="default"
+              className="bg-purple-600 text-white px-3 py-1 text-sm sm:px-4 sm:py-2 sm:text-base rounded-full transition-all hover:bg-purple-700"
+            >
+              {tag.text}
+            </Badge>
           ))}
-         
         </div>
       )}
-       <Link href="/browse" className="flex justify-center items-center mt-2" >
-          <Button className='text-purple-300 mt-2 rounded-full' variant='link'  >
-          Browse more by tags <ArrowRight className="w-9 mt-1" /> </Button>
-          </Link>
+      <div className="flex justify-center">
+        <Link href="/browse">
+          <Button className="text-purple-300 rounded-full transition-all hover:text-purple-100" variant="link">
+            Browse more by tags <ArrowRight className="w-5 h-5 ml-2" />
+          </Button>
+        </Link>
+      </div>
     </div>
   );
 };
