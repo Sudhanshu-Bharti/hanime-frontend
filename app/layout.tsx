@@ -1,6 +1,7 @@
 import './globals.css'
 import { Inter } from 'next/font/google'
 import Navbar from "@/components/Navbar";
+import { Analytics } from '@vercel/analytics/react';
 import Footer from "@/components/Footer";
 export const metadata = {
   metadataBase: new URL('https://hanime.vercel.app'),
@@ -26,6 +27,7 @@ export default function RootLayout({
       <Navbar/>
         {children}
       <Footer/>
+        <Analytics />
         </body>
     </html>
   )
