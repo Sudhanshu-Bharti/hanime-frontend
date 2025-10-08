@@ -5,7 +5,15 @@ const nextConfig = {
         'iili.io', 'cdn.discordapp.com',
         "static-assets-44d.pages.dev"
     ],
-              
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'hanime-cdn.com',
+        port: '',
+        pathname: '/images/**',
+      },
+    ],
+    unoptimized: false,
   },
   api: {
     bodyParser: false,

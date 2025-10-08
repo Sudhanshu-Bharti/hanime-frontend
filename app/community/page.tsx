@@ -1,6 +1,6 @@
 "use client"
 import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
+import { OptimizedImage } from '@/components/shared/OptimizedImage';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -71,17 +71,17 @@ const AnimeGallery: React.FC = () => {
           {animeData.map((item) => (
             <div key={item.id} className="bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300">
               <div className="relative h-64">
-                <Image
+                <OptimizedImage
                   src={item.url}
                   alt={`Anime image by ${item.username}`}
-                  layout="fill"
-                  objectFit="cover"
+                  fill
+                  style={{ objectFit: 'cover' }}
                   className="transition-transform duration-300 hover:scale-105"
                 />
               </div>
               <div className="p-4">
                 <div className="flex items-center mb-4">
-                  <Image
+                  <OptimizedImage
                     src={item.user_avatar_url}
                     alt={`${item.username}'s avatar`}
                     width={40}
@@ -97,16 +97,17 @@ const AnimeGallery: React.FC = () => {
                   <p>Size: {(item.filesize / 1024 / 1024).toFixed(2)} MB</p>
                   <p>Dimensions: {item.width} x {item.height}</p>
                 </div>
-                <Link
-                  href={item.canonical_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                    <Button className='bg-purple-600 text-white px-4 py-2 rounded-full hover:bg-purple-700 transition-colors duration-300 mt-2' >
-
-                  View Original
+                {item.canonical_url && (
+                  <Link
+                    href={item.canonical_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Button className='bg-purple-600 text-white px-4 py-2 rounded-full hover:bg-purple-700 transition-colors duration-300 mt-2 w-full'>
+                      View Original
                     </Button>
-                </Link>
+                  </Link>
+                )}
               </div>
             </div>
           ))}

@@ -1,247 +1,48 @@
 "use client"
-import React, { useState, useEffect, useRef } from 'react'
-import { Card } from "@/components/ui/card"
-import { BASE_URL } from '@/lib/utils';
-import { Skeleton } from './ui/skeleton';
-import { ArrowLeftIcon, ArrowRightIcon } from 'lucide-react';
-// import { useRouter } from 'next/navigation';
-
-interface RecentItem {
-  id: number;
-  cover_url: string;
-  name: string;
-  brand: string;
-  likes: number;
-  downloads: number;
-  views: number;
-  monthly_rank: number;
-  slug: string;
-}
-
-interface RecentData {
-  results: RecentItem[];
-}
+import React from 'react';
+import Link from 'next/link';
+import { useRecentAnime } from '@/hooks/useAnimeData';
+import { AnimeCard } from './shared/AnimeCard';
+import { ScrollContainer } from './shared/ScrollContainer';
+import { LoadingSkeleton } from './shared/Loading';
+import { ErrorMessage } from './shared/ErrorMessage';
 
 const Recent: React.FC = () => {
-    const [recentData, setRecentData] = useState<RecentItem[]>([]);
-    const scrollContainerRef = useRef<HTMLDivElement>(null);
-    const [isLoading, setIsLoading] = useState(true);
-    // const router = useRouter();
+  const { items, isLoading, error, refetch } = useRecentAnime();
 
-    useEffect(() => {
-        const fetchRecent = async () => {
-            try {
-              setIsLoading(true)
-              const response = await fetch(`${BASE_URL}/getLanding/recent`);
-              const data: RecentData = await response.json();
-              setRecentData(data.results);
-            } catch (error) {
-                console.log('Error fetching recent:', error);
-                
-            } finally {
-              setIsLoading(false)
-            }
-        };
-        fetchRecent();
-    }, []);
+  if (isLoading) {
+    return <LoadingSkeleton />;
+  }
 
-    const handleCardClick = async (slug: string) => {
-        try {
-            const response = await fetch(`${BASE_URL}/getInfo/${slug}`);
-            if (!response.ok) {
-                throw new Error('Failed to fetch info');
-            }
-            const infoData = await response.json();
-            
-            localStorage.setItem('currentItemInfo', JSON.stringify(infoData));
-            
-           
-            window.location.href = `/info/${slug}`;           
-          }
-            
-        catch (error) {
-            console.error('Error fetching info:', error);
-        } 
-    };
+  if (error) {
+    return <ErrorMessage message={error} onRetry={refetch} />;
+  }
 
-    const scroll = (direction: 'left' | 'right') => {
-      if (scrollContainerRef.current) {
-          const scrollAmount = direction === 'left' ? -300 : 300;
-          scrollContainerRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-      }
-  };
-
-
-    if (isLoading) {
-        return (
-          <div className='flex flex-row gap-4' >
-          <Skeleton className="w-64 h-96 sm:w-72 animate-pulse" />
-          <Skeleton className="w-64 h-96 sm:w-72 animate-pulse" />
-          <Skeleton className="w-64 h-96 sm:w-72 animate-pulse" />
-          <Skeleton className="w-64 h-96 sm:w-72 animate-pulse" />
-          <Skeleton className="w-64 h-96 sm:w-72 animate-pulse" />
-      </div>
-        );
-    }
-
-
-
+  if (!items || items.length === 0) {
     return (
-      <div className="w-full relative">
-        <button 
-          onClick={() => scroll('left')} 
-          className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-gray-800 p-2 rounded-full text-white hover:bg-gray-700 transition-colors"
-        >
-          <ArrowLeftIcon size={24} />
-        </button>
-        <button 
-          onClick={() => scroll('right')} 
-          className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-gray-800 p-2 rounded-full text-white hover:bg-gray-700 transition-colors"
-        >
-          <ArrowRightIcon size={24} />
-        </button>
-        <div ref={scrollContainerRef} className="overflow-x-auto flex flex-row space-x-4 pb-4 scrollbar-hide">
-          {recentData.map((item) => (
-            <Card key={item.id} onClick={() => handleCardClick(item.slug)} className="flex-none lg:w-64 lg:h-96 w-64 h-96  sm:w-16 sm:h-24 relative overflow-hidden group">
-              <img src={item.cover_url}  alt={item.name} className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/0 transition-opacity group-hover:opacity-100 opacity-0">
-                        <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-                            <h3 className="text-lg font-bold truncate mb-1" title={item.name}>
-                                {item.name}
-                            </h3>
-                            <div className="text-sm opacity-75 truncate mb-2">{item.brand}</div>
-                            <div className="grid grid-cols-3 gap-2 text-sm mb-2">
-                                <div className="flex items-center gap-1">
-                                    <HeartIcon className="w-4 h-4" />
-                                    <span>{item.likes}</span>
-                                </div>
-                                <div className="flex items-center gap-1">
-                                    <DownloadIcon className="w-4 h-4" />
-                                    <span>{item.downloads}</span>
-                                </div>
-                                <div className="flex items-center gap-1">
-                                    <EyeIcon className="w-4 h-4" />
-                                    <span>{item.views}</span>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-2 text-sm">
-                                <FlameIcon className="w-4 h-4" />
-                                <span className="font-medium">Rank: {item.monthly_rank}</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                </Card>
-                
-            ))}
+      <div className="text-center py-12 text-gray-500">
+        <p>No recent anime available</p>
+      </div>
+    );
+  }
 
-          </div>
+  return (
+    <ScrollContainer>
+      {items.map((item) => (
+        <div key={item.id} className="aspect-[2/3] w-full">
+          <AnimeCard item={item} className="h-full" />
         </div>
-    )
-}
+      ))}
+      <Link href="/recent" className="flex items-center justify-center min-w-[120px]">
+        <button 
+          className="h-full px-4 flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+          aria-label="View more recent releases"
+        >
+          View More →
+        </button>
+      </Link>
+    </ScrollContainer>
+  );
+};
 
-export default Recent
-
-
-function DownloadIcon(props: React.JSX.IntrinsicAttributes & React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-      <polyline points="7 10 12 15 17 10" />
-      <line x1="12" x2="12" y1="15" y2="3" />
-    </svg>
-  )
-}
-
-
-function EyeIcon(props: React.JSX.IntrinsicAttributes & React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
-      <circle cx="12" cy="12" r="3" />
-    </svg>
-  )
-}
-
-
-function FlameIcon(props: React.JSX.IntrinsicAttributes & React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
-    </svg>
-  )
-}
-
-
-function HeartIcon(props: React.JSX.IntrinsicAttributes & React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-    </svg>
-  )
-}
-
-
-function XIcon(props: React.JSX.IntrinsicAttributes & React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M18 6 6 18" />
-      <path d="m6 6 12 12" />
-    </svg>
-  )
-}
+export default React.memo(Recent);
