@@ -21,7 +21,7 @@ export const AnimeCard = React.memo<AnimeCardProps>(({ item, onClick, className 
   };
 
   const cardContent = (
-    <div 
+    <div
       className={`group ${className}`}
       role="button"
       tabIndex={0}
@@ -42,7 +42,7 @@ export const AnimeCard = React.memo<AnimeCardProps>(({ item, onClick, className 
             className="object-cover transition-transform duration-500 group-hover:scale-110"
             priority={priority}
           />
-          
+
           {/* Simple play button on hover */}
           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 bg-black/60">
             <div className="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center transform scale-75 group-hover:scale-100 transition-transform duration-300">
@@ -57,16 +57,18 @@ export const AnimeCard = React.memo<AnimeCardProps>(({ item, onClick, className 
         <h3 className="font-medium text-base text-white line-clamp-2" title={item.name}>
           {item.name}
         </h3>
-        <div className="text-sm text-gray-400">{item.brand}</div>
+        <div className="text-sm text-gray-400">{item.brand ?? ''}</div>
         <div className="flex items-center gap-4 text-sm text-gray-300">
-          <div className="flex items-center gap-1.5" title={`${item.views.toLocaleString()} views`}>
+          <div className="flex items-center gap-1.5" title={`${(item.views ?? 0).toLocaleString()} views`}>
             <Eye className="w-4 h-4" />
-            <span>{formatNumber(item.views)}</span>
+            <span>{formatNumber(item.views ?? 0)}</span>
           </div>
-          <div className="flex items-center gap-1.5" title={`${item.likes.toLocaleString()} likes`}>
-            <Heart className="w-4 h-4" />
-            <span>{formatNumber(item.likes)}</span>
-          </div>
+          {item.likes !== undefined && (
+            <div className="flex items-center gap-1.5" title={`${item.likes.toLocaleString()} likes`}>
+              <Heart className="w-4 h-4" />
+              <span>{formatNumber(item.likes)}</span>
+            </div>
+          )}
           {item.monthly_rank && (
             <div className="flex items-center gap-1.5 text-yellow-500" title={`Rank #${item.monthly_rank}`}>
               <TrendingUp className="w-4 h-4" />
