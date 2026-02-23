@@ -3,11 +3,11 @@ export interface AnimeItem {
   id: number;
   cover_url: string;
   name: string;
-  brand: string;
-  likes: number;
-  downloads: number;
+  brand?: string;
+  likes?: number;
+  downloads?: number;
   views: number;
-  monthly_rank: number;
+  monthly_rank?: number;
   slug: string;
   tags?: string[];
 }

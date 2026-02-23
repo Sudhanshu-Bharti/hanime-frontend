@@ -30,6 +30,7 @@
     "eslint-config-next": "13.5.4",
     "framer-motion": "^11.3.2",
     "hls.js": "^1.5.13",
+    "iconsax-reactjs": "^0.0.8",
     "lucide-react": "^0.408.0",
     "ms": "^2.1.3",
     "next": "13.5.4",

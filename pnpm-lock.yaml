@@ -56,6 +56,9 @@ importers:
       hls.js:
         specifier: ^1.5.13
         version: 1.5.13
+      iconsax-reactjs:
+        specifier: ^0.0.8
+        version: 0.0.8(react@18.2.0)
       lucide-react:
         specifier: ^0.408.0
         version: 0.408.0(react@18.2.0)
@@ -922,6 +925,11 @@ packages:
 
   hls.js@1.5.13:
     resolution: {integrity: sha512-xRgKo84nsC7clEvSfIdgn/Tc0NOT+d7vdiL/wvkLO+0k0juc26NRBPPG1SfB8pd5bHXIjMW/F5VM8VYYkOYYdw==}
+
+  iconsax-reactjs@0.0.8:
+    resolution: {integrity: sha512-cb+uTMxbkSFNbu8ZclX7BWQVfOWQt8+m/PsDjnsm/H+mcYrnfTYMjHxiof1FB43k7UAgt1ds+0oFeMVKdqyslw==}
+    peerDependencies:
+      react: '*'
 
   ignore@5.2.4:
     resolution: {integrity: sha512-MAb38BcSbH0eHNBxn7ql2NH/kX33OkB3lZ1BNdh7ENeRChHTYsTvWrMubiIAMNS2llXEEgZ1MUOBtXChP3kaFQ==}
@@ -2261,7 +2269,7 @@ snapshots:
       debug: 4.3.4
       enhanced-resolve: 5.15.0
       eslint: 8.51.0
-      eslint-module-utils: 2.8.0(@typescript-eslint/parser@6.7.4(eslint@8.51.0)(typescript@5.2.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.7.4(eslint@8.51.0)(typescript@5.2.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.28.1(eslint@8.51.0))(eslint@8.51.0))(eslint@8.51.0)
+      eslint-module-utils: 2.8.0(@typescript-eslint/parser@6.7.4(eslint@8.51.0)(typescript@5.2.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1)(eslint@8.51.0)
       eslint-plugin-import: 2.28.1(@typescript-eslint/parser@6.7.4(eslint@8.51.0)(typescript@5.2.2))(eslint-import-resolver-typescript@3.6.1)(eslint@8.51.0)
       fast-glob: 3.3.1
       get-tsconfig: 4.7.2
@@ -2273,7 +2281,7 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
-  eslint-module-utils@2.8.0(@typescript-eslint/parser@6.7.4(eslint@8.51.0)(typescript@5.2.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.7.4(eslint@8.51.0)(typescript@5.2.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.28.1(eslint@8.51.0))(eslint@8.51.0))(eslint@8.51.0):
+  eslint-module-utils@2.8.0(@typescript-eslint/parser@6.7.4(eslint@8.51.0)(typescript@5.2.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1)(eslint@8.51.0):
     dependencies:
       debug: 3.2.7
     optionalDependencies:
@@ -2294,7 +2302,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 8.51.0
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.8.0(@typescript-eslint/parser@6.7.4(eslint@8.51.0)(typescript@5.2.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.7.4(eslint@8.51.0)(typescript@5.2.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.28.1(eslint@8.51.0))(eslint@8.51.0))(eslint@8.51.0)
+      eslint-module-utils: 2.8.0(@typescript-eslint/parser@6.7.4(eslint@8.51.0)(typescript@5.2.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1)(eslint@8.51.0)
       has: 1.0.4
       is-core-module: 2.13.0
       is-glob: 4.0.3
@@ -2595,6 +2603,10 @@ snapshots:
   has@1.0.4: {}
 
   hls.js@1.5.13: {}
+
+  iconsax-reactjs@0.0.8(react@18.2.0):
+    dependencies:
+      react: 18.2.0
 
   ignore@5.2.4: {}
 

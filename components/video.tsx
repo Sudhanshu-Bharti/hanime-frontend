@@ -60,21 +60,23 @@ const Video: React.FC<PageProps> = ({ params }) => {
 
     useEffect(() => {
         if (videoData && videoRef.current) {
-            const videoSrc = getSelectedStream()?.url || '';
+            const rawSrc = getSelectedStream()?.url || '';
+            if (!rawSrc) return;
+
+            // Always route the initial m3u8 through the proxy — the proxy rewrites
+            // all segment URLs inside the manifest, so hls.js fetches them through
+            // the proxy automatically without needing xhrSetup.
+            const proxiedSrc = `/api/proxy-video?url=${encodeURIComponent(rawSrc)}`;
+
             if (Hls.isSupported()) {
                 if (hlsRef.current) {
                     hlsRef.current.destroy();
                 }
-                const hls = new Hls({
-                    xhrSetup: function(xhr, url) {
-                        const proxiedUrl = `/api/proxy-video?url=${encodeURIComponent(url)}`;
-                        xhr.open('GET', proxiedUrl, true);
-                    }
-                });
+                const hls = new Hls();
                 hlsRef.current = hls;
-                hls.loadSource(videoSrc);
+                hls.loadSource(proxiedSrc);
                 hls.attachMedia(videoRef.current);
-                hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                hls.on(Hls.Events.MANIFEST_PARSED, function () {
                     if (isPlaying) {
                         videoRef.current?.play().catch(e => {
                             console.error("Error playing video:", e);
@@ -82,9 +84,9 @@ const Video: React.FC<PageProps> = ({ params }) => {
                         });
                     }
                 });
-                hls.on(Hls.Events.ERROR, function(event, data) {
+                hls.on(Hls.Events.ERROR, function (event, data) {
                     if (data.fatal) {
-                        switch(data.type) {
+                        switch (data.type) {
                             case Hls.ErrorTypes.NETWORK_ERROR:
                                 console.error("Fatal network error encountered, trying to recover");
                                 hls.startLoad();
@@ -102,7 +104,8 @@ const Video: React.FC<PageProps> = ({ params }) => {
                     }
                 });
             } else if (videoRef.current.canPlayType('application/vnd.apple.mpegurl')) {
-                videoRef.current.src = `/api/proxy-video?url=${encodeURIComponent(videoSrc)}`;
+                // Safari native HLS — proxy the url directly
+                videoRef.current.src = proxiedSrc;
             } else {
                 setError("Your browser does not support HLS playback.");
             }
@@ -112,7 +115,7 @@ const Video: React.FC<PageProps> = ({ params }) => {
     const handleQualityChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setSelectedQuality(event.target.value);
     };
-    
+
     const getSelectedStream = () => {
         return videoData?.streams.find(stream => stream.height === selectedQuality);
     };
@@ -137,54 +140,54 @@ const Video: React.FC<PageProps> = ({ params }) => {
 
     return (
         <div className="video-player-container bg-gray-900 min-h-screen text-white p-4 md:p-8">
-        {videoData ? (
-            <div className="max-w-4xl mx-auto">
-                
-                <h1 className="text-3xl md:text-4xl font-bold mb-4 text-purple-400">{videoData.title}</h1>
-                <Badge variant="outline" className="mb-4 bg-purple-600 text-white">
-                    Now Streaming
-                </Badge>
-                    
-                <div className="relative">
-                        <select 
-                                id="quality-select"
-                                value={selectedQuality} 
-                                onChange={handleQualityChange}
-                                className="absolute right-0 bottom-full mb-2 bg-gray-800 text-white p-2 rounded-md shadow-lg"
-                            >
-                                {videoData.streams
-                                    .filter(stream => stream.is_guest_allowed)
-                                    .map(stream => (
-                                        <option key={stream.height} value={stream.height}>
-                                            {stream.height}p
-                                        </option>
-                                    ))
-                                }
-                            </select>
-                            
-                        </div>
-                <div className="relative rounded-lg overflow-hidden shadow-lg mb-6">
-                    
-                    <video
-                        ref={videoRef}
-                        poster={videoData.poster_url}
-                        controls
-                        muted
-                        className="w-full h-auto max-w-full rounded-lg"
-                    >
-                        Your browser does not support the video tag.
-                    </video>
-                    
-                    <div className="absolute bottom-4 left-4 right-4 flex justify-between items-center">
-                                    
+            {videoData ? (
+                <div className="max-w-4xl mx-auto">
+
+                    <h1 className="text-3xl md:text-4xl font-bold mb-4 text-purple-400">{videoData.title}</h1>
+                    <Badge variant="outline" className="mb-4 bg-purple-600 text-white">
+                        Now Streaming
+                    </Badge>
+
+                    <div className="relative">
+                        <select
+                            id="quality-select"
+                            value={selectedQuality}
+                            onChange={handleQualityChange}
+                            className="absolute right-0 bottom-full mb-2 bg-gray-800 text-white p-2 rounded-md shadow-lg"
+                        >
+                            {videoData.streams
+                                .filter(stream => stream.is_guest_allowed)
+                                .map(stream => (
+                                    <option key={stream.height} value={stream.height}>
+                                        {stream.height}p
+                                    </option>
+                                ))
+                            }
+                        </select>
+
                     </div>
+                    <div className="relative rounded-lg overflow-hidden shadow-lg mb-6">
+
+                        <video
+                            ref={videoRef}
+                            poster={videoData.poster_url}
+                            controls
+                            muted
+                            className="w-full h-auto max-w-full rounded-lg"
+                        >
+                            Your browser does not support the video tag.
+                        </video>
+
+                        <div className="absolute bottom-4 left-4 right-4 flex justify-between items-center">
+
+                        </div>
+                    </div>
+
                 </div>
-               
-            </div>
-        ) : (
-            <VideoSkeleton/>
-        )}
-    </div>
+            ) : (
+                <VideoSkeleton />
+            )}
+        </div>
     )
 }
 

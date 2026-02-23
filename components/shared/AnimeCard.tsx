@@ -23,7 +23,7 @@ export const AnimeCard = React.memo<AnimeCardProps>(({ item, onClick, className 
   const content = (
     <div className="flex flex-col gap-2">
       {/* Card/Image Container */}
-      <div 
+      <div
         className={`group relative aspect-[2/3] w-full overflow-hidden cursor-pointer ${className}`}
         role="button"
         tabIndex={0}
@@ -41,10 +41,10 @@ export const AnimeCard = React.memo<AnimeCardProps>(({ item, onClick, className 
           className="object-cover transition-transform duration-300 group-hover:scale-105"
           priority={priority}
         />
-        
+
         {/* Simple hover overlay */}
         <div className="absolute inset-0 bg-transparent group-hover:bg-black/30 transition-all duration-300" />
-        
+
         {/* Play button on hover */}
         <div className="absolute inset-0 hidden sm:flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           <div className="w-12 h-12 rounded-full bg-white/80 flex items-center justify-center">
@@ -66,14 +66,16 @@ export const AnimeCard = React.memo<AnimeCardProps>(({ item, onClick, className 
           {item.name}
         </h3>
         <div className="flex items-center gap-3 text-xs text-gray-400">
-          <div className="flex items-center gap-1" title={`${item.views.toLocaleString()} views`}>
+          <div className="flex items-center gap-1" title={`${(item.views ?? 0).toLocaleString()} views`}>
             <Eye className="w-3.5 h-3.5" />
-            <span>{formatNumber(item.views)}</span>
+            <span>{formatNumber(item.views ?? 0)}</span>
           </div>
-          <div className="flex items-center gap-1" title={`${item.likes.toLocaleString()} likes`}>
-            <Heart className="w-3.5 h-3.5" />
-            <span>{formatNumber(item.likes)}</span>
-          </div>
+          {item.likes !== undefined && (
+            <div className="flex items-center gap-1" title={`${item.likes.toLocaleString()} likes`}>
+              <Heart className="w-3.5 h-3.5" />
+              <span>{formatNumber(item.likes)}</span>
+            </div>
+          )}
         </div>
       </div>
     </div>
