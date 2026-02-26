@@ -3,6 +3,8 @@ import React, { useEffect, useState, useMemo } from 'react'
 import { EyeIcon, CalendarIcon } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { BASE_URL } from '@/lib/utils'
+import { PageLayout } from '@/components/shared/PageLayout'
+import { SimpleImage } from '@/components/shared/OptimizedImage'
 
 // Interface matching the provided JSON structure
 interface TrendingItem {
@@ -78,12 +80,12 @@ const TrendingPage = () => {
     }, [trending, selectedGenre]);
 
     return (
-        <div className="min-h-screen mt-12 bg-gradient-to-br from-gray-900 to-black text-white p-4 sm:p-6 md:p-8 pt-20">
+        <PageLayout containerClassName="pt-4 sm:pt-6 md:pt-8">
 
             {/* Header Section */}
             <div className="mb-10 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight text-white">
+                    <h1 className="text-3xl font-bold tracking-tight text-white font-display">
                         Trending Now
                     </h1>
                     <p className="text-gray-400 mt-1">
@@ -95,7 +97,7 @@ const TrendingPage = () => {
                 <div className="flex flex-wrap gap-2">
                     <button
                         onClick={() => setSelectedGenre(null)}
-                        className={`px-4 py-1.5 text-sm font-medium rounded-full transition-all ${!selectedGenre ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/30' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`}
+                        className={`px-4 py-1.5 text-sm font-medium rounded-full transition-all ${!selectedGenre ? 'bg-white text-black shadow-lg shadow-white/10' : 'bg-white/10 text-gray-300 hover:bg-white/15'}`}
                     >
                         All
                     </button>
@@ -103,7 +105,7 @@ const TrendingPage = () => {
                         <button
                             key={genre}
                             onClick={() => setSelectedGenre(genre)}
-                            className={`px-4 py-1.5 text-sm font-medium rounded-full transition-all ${selectedGenre === genre ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/30' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`}
+                            className={`px-4 py-1.5 text-sm font-medium rounded-full transition-all ${selectedGenre === genre ? 'bg-white text-black shadow-lg shadow-white/10' : 'bg-white/10 text-gray-300 hover:bg-white/15'}`}
                         >
                             {genre}
                         </button>
@@ -113,14 +115,14 @@ const TrendingPage = () => {
 
             {/* Grid Section */}
             {isLoading ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6">
+                <div className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-2 sm:pb-0 sm:grid sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 sm:gap-4 md:gap-6">
                     {[...Array(12)].map((_, i) => (
-                        <div key={i} className="w-full aspect-[2/3] rounded-xl bg-gray-800 animate-pulse" />
+                        <div key={i} className="w-[150px] sm:w-full aspect-[2/3] rounded-xl bg-gray-800 animate-pulse snap-start" />
                     ))}
                 </div>
             ) : (
                 <motion.div
-                    className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6"
+                    className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-2 sm:pb-0 sm:grid sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 sm:gap-4 md:gap-6"
                     layout
                 >
                     <AnimatePresence>
@@ -132,56 +134,51 @@ const TrendingPage = () => {
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, scale: 0.9 }}
                                 transition={{ duration: 0.3 }}
-                                className="cursor-pointer group"
+                                className="cursor-pointer group w-[150px] sm:w-full snap-start"
                                 onClick={() => handleCardClick(item.slug)}
                             >
                                 {/* Card Container */}
-                                <div className="relative w-full aspect-[2/3] rounded-lg overflow-hidden shadow-md group-hover:shadow-xl transition-all duration-300 border border-gray-700 group-hover:border-purple-500">
-
-                                    {/* Image - Absolute for perfect fit */}
-                                    <img
+                                <div className="relative w-full aspect-[2/3] rounded-xl overflow-hidden shadow-md transition-all duration-300 border border-white/10 bg-black/30">
+                                    <SimpleImage
                                         src={item.cover_url}
                                         alt={item.name}
-                                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                                     />
+                                    <div className="absolute inset-0 bg-black/20 transition-colors duration-300 group-hover:bg-black/45" />
+                                </div>
 
-                                    {/* Gradient Overlay */}
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
-
-                                    {/* Content Overlay */}
-                                    <div className="absolute inset-0 p-3 flex flex-col justify-end">
-
-                                        {/* Top Stats Badge */}
-                                        <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-sm px-2 py-0.5 rounded text-[10px] font-bold text-white flex items-center gap-1">
-                                            <EyeIcon className="w-3 h-3 text-blue-400" />
+                                {/* Details below card */}
+                                <div className="mt-3 space-y-2">
+                                    <h3 className="text-sm md:text-base font-semibold text-white leading-tight line-clamp-2 min-h-[2.5rem]">
+                                        {item.name}
+                                    </h3>
+                                    <div className="flex items-center gap-3 text-[11px] md:text-xs text-gray-300 h-4">
+                                        <div className="flex items-center gap-1" title={`${item.views.toLocaleString()} views`}>
+                                            <EyeIcon className="w-3.5 h-3.5 text-blue-400" />
                                             {formatNumber(item.views)}
                                         </div>
+                                        {item.released_at && (
+                                            <div className="flex items-center gap-1">
+                                                <CalendarIcon className="w-3.5 h-3.5" />
+                                                {formatDate(item.released_at)}
+                                            </div>
+                                        )}
+                                    </div>
 
-                                        {/* Bottom Info */}
-                                        <h3 className="text-sm md:text-base font-bold text-white leading-tight line-clamp-2 mb-1 drop-shadow-md">
-                                            {item.name}
-                                        </h3>
-
-                                        <div className="flex items-center gap-2 text-[10px] md:text-xs text-gray-300 mb-2">
-                                            {item.released_at && (
-                                                <div className="flex items-center gap-1">
-                                                    <CalendarIcon className="w-3 h-3" />
-                                                    {formatDate(item.released_at)}
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        {/* Genre Tags */}
-                                        <div className="flex flex-wrap gap-1">
-                                            {item.genres.slice(0, 2).map(genre => (
-                                                <span
-                                                    key={genre}
-                                                    className="bg-gray-900/70 backdrop-blur-sm text-gray-200 text-[10px] px-1.5 py-0.5 rounded"
-                                                >
-                                                    {genre}
-                                                </span>
-                                            ))}
-                                        </div>
+                                    {/* Genre Tags */}
+                                    <div className="min-h-[22px]">
+                                        {item.genres.length > 0 && (
+                                            <div className="flex flex-wrap gap-1.5">
+                                                {item.genres.slice(0, 2).map(genre => (
+                                                    <span
+                                                        key={genre}
+                                                        className="bg-white/10 text-gray-200 text-[10px] px-2 py-0.5 rounded-full"
+                                                    >
+                                                        {genre}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </motion.div>
@@ -189,7 +186,7 @@ const TrendingPage = () => {
                     </AnimatePresence>
                 </motion.div>
             )}
-        </div>
+        </PageLayout>
     )
 }
 

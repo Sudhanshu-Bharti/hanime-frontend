@@ -10,8 +10,8 @@ export const ScrollContainer = React.memo<ScrollContainerProps>(({
   className = '' 
 }) => {
   return (
-    <div className={`w-full p-4 ${className}`}>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+    <div className={`w-full ${className}`}>
+      <div className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory px-4 pb-2 sm:px-0 sm:pb-0 sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 sm:gap-6">
         {children}
       </div>
     </div>

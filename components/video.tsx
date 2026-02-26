@@ -5,7 +5,7 @@ import { Badge } from './ui/badge';
 import VideoSkeleton from "@/components/videoSkeleton";
 import Hls from 'hls.js';
 import { BASE_URL } from '@/lib/utils';
-import { PauseCircle, PlayCircle, Settings } from 'lucide-react';
+import { Settings } from 'lucide-react';
 
 interface Stream {
     height: string;
@@ -30,6 +30,21 @@ const Video: React.FC<PageProps> = ({ params }) => {
     const [error, setError] = useState<string | null>(null);
     const videoRef = useRef<HTMLVideoElement>(null);
     const hlsRef = useRef<Hls | null>(null);
+
+    const normalizeStreamUrl = (url: string): string => {
+        if (!url) return url;
+        if (url.startsWith('//')) return `https:${url}`;
+        try {
+            return new URL(url).toString();
+        } catch {
+            // If relative, resolve against backend origin
+            try {
+                return new URL(url, BASE_URL).toString();
+            } catch {
+                return url;
+            }
+        }
+    };
 
     useEffect(() => {
         const getVideo = async () => {
@@ -63,10 +78,12 @@ const Video: React.FC<PageProps> = ({ params }) => {
             const rawSrc = getSelectedStream()?.url || '';
             if (!rawSrc) return;
 
-            // Always route the initial m3u8 through the proxy — the proxy rewrites
-            // all segment URLs inside the manifest, so hls.js fetches them through
-            // the proxy automatically without needing xhrSetup.
-            const proxiedSrc = `/api/proxy-video?url=${encodeURIComponent(rawSrc)}`;
+            const normalizedSrc = normalizeStreamUrl(rawSrc);
+
+            // Enable proxy by default to avoid CDN hotlink/segment blocking.
+            // Set NEXT_PUBLIC_USE_PROXY=0 to disable.
+            const useProxy = process.env.NEXT_PUBLIC_USE_PROXY !== '0';
+            const src = useProxy ? `/api/proxy-video?url=${encodeURIComponent(normalizedSrc)}` : normalizedSrc;
 
             if (Hls.isSupported()) {
                 if (hlsRef.current) {
@@ -74,7 +91,7 @@ const Video: React.FC<PageProps> = ({ params }) => {
                 }
                 const hls = new Hls();
                 hlsRef.current = hls;
-                hls.loadSource(proxiedSrc);
+                hls.loadSource(src);
                 hls.attachMedia(videoRef.current);
                 hls.on(Hls.Events.MANIFEST_PARSED, function () {
                     if (isPlaying) {
@@ -104,8 +121,8 @@ const Video: React.FC<PageProps> = ({ params }) => {
                     }
                 });
             } else if (videoRef.current.canPlayType('application/vnd.apple.mpegurl')) {
-                // Safari native HLS — proxy the url directly
-                videoRef.current.src = proxiedSrc;
+                // Safari native HLS
+                videoRef.current.src = src;
             } else {
                 setError("Your browser does not support HLS playback.");
             }
@@ -139,50 +156,52 @@ const Video: React.FC<PageProps> = ({ params }) => {
     }
 
     return (
-        <div className="video-player-container bg-gray-900 min-h-screen text-white p-4 md:p-8">
+        <div className="video-player-container text-white">
             {videoData ? (
-                <div className="max-w-4xl mx-auto">
+                <div className="rounded-2xl border border-white/10 bg-[hsl(var(--surface-1))] p-4 sm:p-6">
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-4">
+                        <div>
+                            <h1 className="text-xl sm:text-2xl font-bold text-white">{videoData.title}</h1>
+                            <div className="mt-2 flex items-center gap-2">
+                                <Badge variant="outline" className="bg-white/5 text-white border-white/10">
+                                    Now Streaming
+                                </Badge>
+                                <span className="text-xs text-white/50">Adaptive HLS</span>
+                            </div>
+                        </div>
 
-                    <h1 className="text-3xl md:text-4xl font-bold mb-4 text-purple-400">{videoData.title}</h1>
-                    <Badge variant="outline" className="mb-4 bg-purple-600 text-white">
-                        Now Streaming
-                    </Badge>
-
-                    <div className="relative">
-                        <select
-                            id="quality-select"
-                            value={selectedQuality}
-                            onChange={handleQualityChange}
-                            className="absolute right-0 bottom-full mb-2 bg-gray-800 text-white p-2 rounded-md shadow-lg"
-                        >
-                            {videoData.streams
-                                .filter(stream => stream.is_guest_allowed)
-                                .map(stream => (
-                                    <option key={stream.height} value={stream.height}>
-                                        {stream.height}p
-                                    </option>
-                                ))
-                            }
-                        </select>
-
+                        <label className="flex items-center gap-2 text-xs sm:text-sm text-white/70 bg-white/5 border border-white/10 px-3 py-2 rounded-full">
+                            <Settings className="h-4 w-4 text-white/70" />
+                            <span>Quality</span>
+                            <select
+                                id="quality-select"
+                                value={selectedQuality}
+                                onChange={handleQualityChange}
+                                className="bg-transparent text-white outline-none"
+                            >
+                                {videoData.streams
+                                    .filter(stream => stream.is_guest_allowed)
+                                    .map(stream => (
+                                        <option key={stream.height} value={stream.height} className="bg-black text-white">
+                                            {stream.height}p
+                                        </option>
+                                    ))
+                                }
+                            </select>
+                        </label>
                     </div>
-                    <div className="relative rounded-lg overflow-hidden shadow-lg mb-6">
 
+                    <div className="relative rounded-2xl overflow-hidden border border-white/10 bg-black/40 shadow-2xl shadow-black/40">
                         <video
                             ref={videoRef}
                             poster={videoData.poster_url}
                             controls
                             muted
-                            className="w-full h-auto max-w-full rounded-lg"
+                            className="w-full h-auto max-w-full"
                         >
                             Your browser does not support the video tag.
                         </video>
-
-                        <div className="absolute bottom-4 left-4 right-4 flex justify-between items-center">
-
-                        </div>
                     </div>
-
                 </div>
             ) : (
                 <VideoSkeleton />

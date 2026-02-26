@@ -1,10 +1,33 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Image, { ImageProps } from 'next/image';
 
 interface OptimizedImageProps extends Omit<ImageProps, 'onError'> {
   fallbackSrc?: string;
   unoptimizeOnError?: boolean;
 }
+
+const IMAGE_PROXY_HOSTS = [
+  'hanime-cdn.com',
+];
+
+const shouldProxyImage = (urlString: string): boolean => {
+  if (urlString.startsWith('/api/proxy-image?')) return false;
+  const normalized = urlString.startsWith('//') ? `https:${urlString}` : urlString;
+  try {
+    const url = new URL(normalized);
+    const host = url.hostname;
+    return IMAGE_PROXY_HOSTS.some(h => host === h || host.endsWith(`.${h}`));
+  } catch {
+    return false;
+  }
+};
+
+const getProxiedImageSrc = (src: ImageProps['src']): ImageProps['src'] => {
+  if (typeof src !== 'string') return src;
+  const useProxy = process.env.NEXT_PUBLIC_USE_IMAGE_PROXY !== '0';
+  if (!useProxy || !shouldProxyImage(src)) return src;
+  return `/api/proxy-image?url=${encodeURIComponent(src)}`;
+};
 
 /**
  * A wrapper around Next.js Image component that handles CDN blocking issues
@@ -16,12 +39,17 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
   unoptimizeOnError = true,
   ...props
 }) => {
-  const [imgSrc, setImgSrc] = useState(src);
+  const initialSrc = useMemo(() => getProxiedImageSrc(src), [src]);
+  const [imgSrc, setImgSrc] = useState<ImageProps['src']>(initialSrc);
   const [isUnoptimized, setIsUnoptimized] = useState(false);
+
+  useEffect(() => {
+    setImgSrc(initialSrc);
+  }, [initialSrc]);
 
   const handleError = () => {
     console.warn(`Failed to load optimized image: ${src}`);
-    
+
     if (unoptimizeOnError && !isUnoptimized) {
       // Try unoptimized version first
       setIsUnoptimized(true);
@@ -32,16 +60,21 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
     }
   };
 
-  // For external CDN images that might block optimization
-  const shouldUnoptimize = 
-    typeof src === 'string' && 
-    (src.includes('hanime-cdn.com') || src.includes('cdn.discordapp.com'));
+  // For all external CDN images, we bypass Vercel's image optimization 
+  // to stay within the 1000-image/month Free Tier limit.
+  // We rely on the browser's native lazy loading and the CDN's own optimization.
+  const isExternal = typeof src === 'string' && (
+    src.startsWith('http') ||
+    src.startsWith('//') ||
+    src.startsWith('/api/proxy-image?')
+  );
+  const shouldUnoptimize = isExternal || isUnoptimized;
 
   return (
     <Image
       {...props}
       src={imgSrc}
-      unoptimized={isUnoptimized || shouldUnoptimize}
+      unoptimized={shouldUnoptimize}
       onError={handleError}
     />
   );
@@ -56,14 +89,19 @@ interface SimpleImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   alt: string;
 }
 
-export const SimpleImage: React.FC<SimpleImageProps> = ({ 
-  src, 
-  alt, 
+export const SimpleImage: React.FC<SimpleImageProps> = ({
+  src,
+  alt,
   className = '',
-  ...props 
+  ...props
 }) => {
-  const [imgSrc, setImgSrc] = useState(src);
+  const initialSrc = useMemo(() => getProxiedImageSrc(src), [src]);
+  const [imgSrc, setImgSrc] = useState(initialSrc);
   const [error, setError] = useState(false);
+
+  useEffect(() => {
+    setImgSrc(initialSrc);
+  }, [initialSrc]);
 
   const handleError = () => {
     if (!error) {

@@ -1,0 +1,74 @@
+/* Theme tokens (developer settings). Edit values here to change the site palette. */
+:root {
+  --nav-height: 64px;
+  --radius: 14px;
+
+  --background: 222 18% 7%;
+  --foreground: 0 0% 96%;
+
+  --card: 222 18% 9%;
+  --card-foreground: 0 0% 96%;
+
+  --popover: 222 18% 9%;
+  --popover-foreground: 0 0% 96%;
+
+  --primary: 0 0% 98%;
+  --primary-foreground: 220 15% 10%;
+
+  --secondary: 222 14% 14%;
+  --secondary-foreground: 0 0% 92%;
+
+  --muted: 222 12% 14%;
+  --muted-foreground: 220 10% 62%;
+
+  --accent: 222 12% 16%;
+  --accent-foreground: 0 0% 94%;
+
+  --destructive: 0 72% 45%;
+  --destructive-foreground: 0 0% 96%;
+
+  --border: 222 12% 18%;
+  --input: 222 12% 18%;
+  --ring: 0 0% 96%;
+
+  --surface-1: 222 18% 9%;
+  --surface-2: 222 16% 12%;
+  --surface-3: 222 12% 15%;
+  --text-strong: 0 0% 98%;
+  --text-muted: 220 10% 62%;
+}
+
+/* Optional light palette for local preview:
+   set <html data-theme="light"> in app/layout.tsx */
+:root[data-theme="light"] {
+  --background: 0 0% 98%;
+  --foreground: 222 18% 12%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 222 18% 12%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 18% 12%;
+
+  --primary: 222 18% 12%;
+  --primary-foreground: 0 0% 98%;
+
+  --secondary: 210 24% 94%;
+  --secondary-foreground: 222 18% 12%;
+
+  --muted: 210 24% 94%;
+  --muted-foreground: 222 10% 40%;
+
+  --accent: 210 24% 92%;
+  --accent-foreground: 222 18% 12%;
+
+  --border: 210 18% 88%;
+  --input: 210 18% 88%;
+  --ring: 222 18% 12%;
+
+  --surface-1: 0 0% 100%;
+  --surface-2: 210 24% 96%;
+  --surface-3: 210 22% 92%;
+  --text-strong: 222 18% 12%;
+  --text-muted: 222 10% 40%;
+}

@@ -3,12 +3,12 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { useSearchAnime, useAnimeByTag } from '@/hooks/useAnimeData';
 import { AnimeCard } from '@/components/shared/AnimeCard';
 import { ErrorMessage } from '@/components/shared/ErrorMessage';
-import { LoadingSkeleton } from '@/components/shared/Loading';
+import { PageLayout } from '@/components/shared/PageLayout';
 import { Search, Tag, ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 
-export default function SearchPage() {
+function SearchPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const query = searchParams.get('q') || '';
@@ -19,7 +19,7 @@ export default function SearchPage() {
   // Use appropriate hook based on search type
   const searchResults = useSearchAnime(query, page);
   const tagResults = useAnimeByTag(tag, page);
-  
+
   const { data, isLoading, error, refetch } = tag ? tagResults : searchResults;
 
   // Scroll to top on page change
@@ -41,18 +41,17 @@ export default function SearchPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#0a0a0a] text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <PageLayout>
         {/* Header */}
         <div className="mb-8 animate-fadeIn">
-          <Link 
+          <Link
             href="/"
             className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-6 group"
           >
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
             <span>Back to Home</span>
           </Link>
-          
+
           <div className="flex items-center gap-3 mb-3">
             {tag ? (
               <>
@@ -60,7 +59,7 @@ export default function SearchPage() {
                   <Tag className="w-6 h-6 text-gray-400" />
                 </div>
                 <div>
-                  <h1 className="text-3xl sm:text-4xl font-bold">
+                  <h1 className="text-3xl sm:text-4xl font-bold font-display">
                     {tag}
                   </h1>
                   <p className="text-sm text-gray-500 mt-1">Browse by tag</p>
@@ -72,7 +71,7 @@ export default function SearchPage() {
                   <Search className="w-6 h-6 text-gray-400" />
                 </div>
                 <div>
-                  <h1 className="text-2xl sm:text-3xl font-bold text-gray-300">
+                  <h1 className="text-2xl sm:text-3xl font-bold text-gray-300 font-display">
                     "{query}"
                   </h1>
                   <p className="text-sm text-gray-500 mt-1">Search results</p>
@@ -80,7 +79,7 @@ export default function SearchPage() {
               </>
             )}
           </div>
-          
+
           {data && data.results && (
             <div className="flex items-center gap-2 text-sm text-gray-400">
               <span className="font-medium text-white">{data.results.length}</span>
@@ -97,9 +96,9 @@ export default function SearchPage() {
 
         {/* Loading State */}
         {(isLoading || isNavigating) && (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 animate-pulse">
+          <div className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-2 sm:pb-0 sm:grid sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 sm:gap-4 animate-pulse">
             {Array.from({ length: 10 }).map((_, i) => (
-              <div key={i} className="aspect-[2/3] bg-gray-800 rounded-lg"></div>
+              <div key={i} className="aspect-[2/3] w-[150px] sm:w-full bg-gray-800 rounded-lg snap-start"></div>
             ))}
           </div>
         )}
@@ -107,7 +106,7 @@ export default function SearchPage() {
         {/* Error State */}
         {error && !isLoading && (
           <div className="animate-fadeIn">
-            <ErrorMessage 
+            <ErrorMessage
               message={error}
               onRetry={refetch}
             />
@@ -117,15 +116,15 @@ export default function SearchPage() {
         {/* Results Grid */}
         {!isLoading && !error && !isNavigating && data?.results && data.results.length > 0 && (
           <div className="animate-fadeIn">
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-12">
+            <div className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-2 sm:pb-0 sm:grid sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 sm:gap-4 mb-12">
               {data.results.map((anime, index) => (
-                <div 
+                <div
                   key={anime.id}
-                  className="animate-slideUp"
+                  className="animate-slideUp aspect-[2/3] w-[150px] sm:w-full snap-start"
                   style={{ animationDelay: `${index * 50}ms` }}
                 >
-                  <AnimeCard 
-                    item={anime} 
+                  <AnimeCard
+                    item={anime}
                     priority={index < 5}
                   />
                 </div>
@@ -198,7 +197,7 @@ export default function SearchPage() {
                     </>
                   )}
                 </div>
-                
+
                 {/* Next Button */}
                 <button
                   onClick={() => navigateToPage(page + 1)}
@@ -221,12 +220,12 @@ export default function SearchPage() {
             </div>
             <h2 className="text-2xl font-semibold text-gray-300 mb-2">No results found</h2>
             <p className="text-gray-500 mb-8 max-w-md mx-auto">
-              {tag 
+              {tag
                 ? `No anime found with the tag "${tag}". Try browsing other categories.`
                 : `No results for "${query}". Try different keywords or browse our collection.`
               }
             </p>
-            <Link 
+            <Link
               href="/"
               className="inline-flex items-center gap-2 px-6 py-3 bg-white text-black font-medium rounded-lg hover:bg-gray-200 transition-colors"
             >
@@ -235,7 +234,22 @@ export default function SearchPage() {
             </Link>
           </div>
         )}
-      </div>
-    </main>
+    </PageLayout>
   );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={
+      <PageLayout>
+        <div className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-2 sm:pb-0 sm:grid sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 sm:gap-4 w-full animate-pulse">
+          {Array.from({ length: 10 }).map((_, i) => (
+            <div key={i} className="aspect-[2/3] w-[150px] sm:w-full bg-gray-800 rounded-lg snap-start"></div>
+          ))}
+        </div>
+      </PageLayout>
+    }>
+      <SearchPageContent />
+    </Suspense>
+  )
 }

@@ -6,6 +6,7 @@ import { useBrowseTags, useAnimeByTag } from '@/hooks/useAnimeData';
 import { LoadingSpinner } from '@/components/shared/Loading';
 import { ErrorMessage } from '@/components/shared/ErrorMessage';
 import { AnimeCard } from '@/components/shared/AnimeCard';
+import { PageLayout } from '@/components/shared/PageLayout';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 
@@ -14,19 +15,19 @@ const BrowseSection: React.FC = () => {
   const tag = searchParams.get('tag');
 
   const { tags, isLoading: tagsLoading, error: tagsError, refetch: refetchTags } = useBrowseTags();
-  const { data: tagResults, isLoading: resultsLoading, error: resultsError, refetch: refetchResults } 
+  const { data: tagResults, isLoading: resultsLoading, error: resultsError, refetch: refetchResults }
     = useAnimeByTag(tag || '', 0);
 
   const isLoading = tagsLoading || (tag && resultsLoading);
   const error = tagsError || (tag && resultsError);
 
   return (
-    <div className="bg-gray-900 min-h-screen text-white p-8">
+    <div className="text-white">
       {tag ? (
-        <div className="max-w-7xl mx-auto">
+        <div className="w-full">
           {/* Back button and title */}
           <div className="mb-8">
-            <Link 
+            <Link
               href="/browse"
               className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-4"
             >
@@ -45,9 +46,9 @@ const BrowseSection: React.FC = () => {
             <ErrorMessage message={error} onRetry={tag ? refetchResults : refetchTags} />
           ) : (
             /* Grid of anime cards */
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            <div className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-2 sm:pb-0 sm:grid sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 sm:gap-4">
               {tagResults?.results?.map((anime) => (
-                <div key={anime.id} className="aspect-[2/3]">
+                <div key={anime.id} className="aspect-[2/3] w-[150px] sm:w-full snap-start">
                   <AnimeCard item={anime} />
                 </div>
               ))}
@@ -55,8 +56,8 @@ const BrowseSection: React.FC = () => {
           )}
         </div>
       ) : (
-        <div className="max-w-7xl mx-auto">
-          <h1 className="mt-8 text-4xl font-bold mb-8 text-center text-purple-400">Browse Anime</h1>
+        <div className="w-full">
+          <h1 className="mt-8 text-4xl font-bold mb-8 text-center text-white font-display">Browse Anime</h1>
 
           {isLoading ? (
             <div className="min-h-[60vh] flex items-center justify-center">
@@ -67,12 +68,13 @@ const BrowseSection: React.FC = () => {
           ) : tags.length === 0 ? (
             <p className="text-center text-lg">No tags available</p>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-2 sm:pb-0 sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 sm:gap-6">
               {tags.map((tag) => (
-                <Link 
+                <Link
                   key={tag.id}
                   href={`/browse?tag=${encodeURIComponent(tag.text)}`}
-                  className="block bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
+                  prefetch={false}
+                  className="block w-[240px] sm:w-full snap-start bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
                 >
                   <div className="relative h-48">
                     <OptimizedImage
@@ -99,4 +101,18 @@ const BrowseSection: React.FC = () => {
   );
 };
 
-export default React.memo(BrowseSection);
+const BrowsePage: React.FC = () => {
+  return (
+    <React.Suspense fallback={
+      <PageLayout containerClassName="py-16">
+        <LoadingSpinner className="w-12 h-12" />
+      </PageLayout>
+    }>
+      <PageLayout>
+        <BrowseSection />
+      </PageLayout>
+    </React.Suspense>
+  )
+}
+
+export default React.memo(BrowsePage);

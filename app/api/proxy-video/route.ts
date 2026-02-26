@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+export const runtime = 'edge'
+
 // Static allowlist for well-known CDN hostnames
 const ALLOWED_HOSTS = [
   'streamable.cloud',
@@ -116,18 +118,23 @@ export async function GET(req: NextRequest) {
         headers: {
           ...CORS_HEADERS,
           'Content-Type': 'application/vnd.apple.mpegurl',
-          'Cache-Control': 'no-cache, no-store',
+          // Cache manifest at the edge for 10 minutes, but allow it to update in background
+          'Cache-Control': 'public, s-maxage=600, stale-while-revalidate=300',
         },
       })
     }
 
     // ── Binary segments / TS chunks: stream body directly ──
     const responseHeaders = new Headers(CORS_HEADERS)
-    const forward = ['content-type', 'content-length', 'content-range', 'accept-ranges', 'cache-control']
+    const forward = ['content-type', 'content-length', 'content-range', 'accept-ranges']
     forward.forEach(h => {
       const v = upstream.headers.get(h)
       if (v) responseHeaders.set(h, v)
     })
+
+    // Cache segments/chunks for 24 hours at the edge
+    // This is the key to preventing "Fast Origin Transfer" overages
+    responseHeaders.set('Cache-Control', 'public, s-maxage=86400, stale-while-revalidate=3600')
 
     // body can be null for 204/304; guard it
     return new NextResponse(upstream.body ?? null, {

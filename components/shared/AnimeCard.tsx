@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { Play, Eye, Heart, TrendingUp } from 'lucide-react';
+import { Eye, Heart, TrendingUp } from 'lucide-react';
 import { formatNumber } from '../../lib/constants';
 import type { AnimeItem } from '../../types';
 import { OptimizedImage } from './OptimizedImage';
@@ -21,10 +21,10 @@ export const AnimeCard = React.memo<AnimeCardProps>(({ item, onClick, className 
   };
 
   const content = (
-    <div className="flex flex-col gap-2">
+    <div className="group">
       {/* Card/Image Container */}
       <div
-        className={`group relative aspect-[2/3] w-full overflow-hidden cursor-pointer ${className}`}
+        className={`relative aspect-[2/3] w-full overflow-hidden cursor-pointer rounded-xl border border-white/10 bg-black/30 transition-all duration-300 group-hover:border-white/20 ${className}`}
         role="button"
         tabIndex={0}
         onKeyDown={(e: React.KeyboardEvent) => {
@@ -38,40 +38,37 @@ export const AnimeCard = React.memo<AnimeCardProps>(({ item, onClick, className 
           src={item.cover_url}
           alt={item.name}
           fill
-          className="object-cover transition-transform duration-300 group-hover:scale-105"
+          className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
           priority={priority}
         />
 
-        {/* Simple hover overlay */}
-        <div className="absolute inset-0 bg-transparent group-hover:bg-black/30 transition-all duration-300" />
+        {/* Dim overlay */}
+        <div className="absolute inset-0 bg-black/20 transition-colors duration-300 group-hover:bg-black/45" />
 
-        {/* Play button on hover */}
-        <div className="absolute inset-0 hidden sm:flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <div className="w-12 h-12 rounded-full bg-white/80 flex items-center justify-center">
-            <Play className="w-6 h-6 text-black fill-black ml-0.5" />
-          </div>
-        </div>
-
-        {/* Rank badge - always visible if ranked */}
+        {/* Rank badge */}
         {item.monthly_rank && item.monthly_rank <= 100 && (
-          <div className="absolute top-2 right-2 px-1.5 py-0.5 bg-yellow-500 text-white text-xs font-semibold rounded">
+          <div className="absolute top-2 right-2 px-1.5 py-0.5 bg-yellow-500 text-white text-xs font-semibold rounded flex items-center gap-1">
+            <TrendingUp className="w-3 h-3" />
             #{item.monthly_rank}
           </div>
         )}
       </div>
 
-      {/* Content below card */}
-      <div className="flex flex-col gap-1">
-        <h3 className="text-sm font-medium text-white line-clamp-2 leading-tight hover:text-gray-300 transition-colors">
+      {/* Info below card */}
+      <div className="mt-3 space-y-2">
+        <h3 className="text-sm sm:text-base font-semibold text-white line-clamp-2 leading-tight min-h-[2.5rem]" title={item.name}>
           {item.name}
         </h3>
-        <div className="flex items-center gap-3 text-xs text-gray-400">
-          <div className="flex items-center gap-1" title={`${(item.views ?? 0).toLocaleString()} views`}>
+        <div className="text-xs sm:text-sm text-gray-400 truncate h-4" title={item.brand ?? ''}>
+          {item.brand ?? ''}
+        </div>
+        <div className="flex items-center gap-4 text-[11px] sm:text-sm text-gray-300 h-4">
+          <div className="flex items-center gap-1.5" title={`${(item.views ?? 0).toLocaleString()} views`}>
             <Eye className="w-3.5 h-3.5" />
             <span>{formatNumber(item.views ?? 0)}</span>
           </div>
           {item.likes !== undefined && (
-            <div className="flex items-center gap-1" title={`${item.likes.toLocaleString()} likes`}>
+            <div className="flex items-center gap-1.5" title={`${item.likes.toLocaleString()} likes`}>
               <Heart className="w-3.5 h-3.5" />
               <span>{formatNumber(item.likes)}</span>
             </div>
@@ -84,7 +81,7 @@ export const AnimeCard = React.memo<AnimeCardProps>(({ item, onClick, className 
   return onClick ? (
     <div onClick={handleClick}>{content}</div>
   ) : (
-    <Link href={`/info/${item.slug}`}>
+    <Link href={`/info/${item.slug}`} prefetch={false}>
       {content}
     </Link>
   );

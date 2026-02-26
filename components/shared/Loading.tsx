@@ -41,11 +41,11 @@ LoadingSpinner.displayName = 'LoadingSpinner';
 // Grid loading skeleton for search/browse pages
 export const GridLoadingSkeleton = React.memo<{ count?: number }>(({ count = 10 }) => {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+    <div className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-2 sm:pb-0 sm:grid sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 sm:gap-4">
       {Array.from({ length: count }).map((_, index) => (
         <div 
           key={index} 
-          className="aspect-[2/3] bg-gray-900 rounded-lg animate-pulse"
+          className="aspect-[2/3] w-[150px] sm:w-full bg-gray-900 rounded-lg animate-pulse snap-start"
           style={{ animationDelay: `${index * 50}ms` }}
         >
           <div className="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg"></div>

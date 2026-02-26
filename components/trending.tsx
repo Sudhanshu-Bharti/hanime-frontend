@@ -29,7 +29,7 @@ const Trending = () => {
   return (
     <ScrollContainer>
       {items.map((item) => (
-        <div key={item.id} className="aspect-[2/3] w-full">
+        <div key={item.id} className="w-[150px] sm:w-full flex-shrink-0 snap-start">
           <AnimeCard item={item} className="h-full" />
         </div>
       ))}

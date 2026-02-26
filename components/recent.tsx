@@ -29,13 +29,13 @@ const Recent: React.FC = () => {
   return (
     <ScrollContainer>
       {items.map((item) => (
-        <div key={item.id} className="aspect-[2/3] w-full">
+        <div key={item.id} className="w-[150px] sm:w-full flex-shrink-0 snap-start">
           <AnimeCard item={item} className="h-full" />
         </div>
       ))}
-      <Link href="/recent" className="flex items-center justify-center min-w-[120px]">
+      <Link href="/recent" prefetch={false} className="flex items-center justify-center min-w-[150px] sm:min-w-0 snap-start">
         <button 
-          className="h-full px-4 flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+          className="min-h-[310px] w-full px-4 flex items-center justify-center gap-2 text-gray-400 hover:text-white transition-colors border border-white/10 rounded-xl bg-white/5"
           aria-label="View more recent releases"
         >
           View More →

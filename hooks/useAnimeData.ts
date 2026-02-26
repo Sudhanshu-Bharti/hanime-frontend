@@ -14,27 +14,47 @@ interface UseFetchResult<T> {
   refetch: () => Promise<void>;
 }
 
+// Simple in-memory cache to prevent redundant fetches
+const cache = new Map<string, { data: any; timestamp: number }>();
+const CACHE_DURATION = 15 * 60 * 1000; // 15 minutes
+
 /**
- * Generic fetch hook for API calls
+ * Generic fetch hook for API calls with caching
  */
 export function useFetch<T>(
   endpoint: string,
   options: UseFetchOptions = { enabled: true }
 ): UseFetchResult<T> {
-  const [data, setData] = useState<T | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [data, setData] = useState<T | null>(() => {
+    if (!endpoint) return null;
+    const cached = cache.get(endpoint);
+    if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+      return cached.data as T;
+    }
+    return null;
+  });
+  const [isLoading, setIsLoading] = useState(!data);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchData = useCallback(async () => {
-    if (!options.enabled) return;
+  const fetchData = useCallback(async (forceRefresh = false) => {
+    if (!options.enabled || !endpoint) return;
+
+    // Check cache if not forcing refresh
+    if (!forceRefresh) {
+      const cached = cache.get(endpoint);
+      if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+        setData(cached.data as T);
+        setIsLoading(false);
+        return;
+      }
+    }
 
     try {
       setIsLoading(true);
       setError(null);
       const response = await fetch(`${BASE_URL}${endpoint}`);
-      
+
       if (!response.ok) {
-        // Provide more specific error messages based on status code
         if (response.status === 500) {
           throw new Error('Server error. The API is currently experiencing issues. Please try again later.');
         } else if (response.status === 404) {
@@ -45,8 +65,12 @@ export function useFetch<T>(
           throw new Error(`HTTP error! status: ${response.status}`);
         }
       }
-      
+
       const result = await response.json();
+
+      // Update cache
+      cache.set(endpoint, { data: result, timestamp: Date.now() });
+
       setData(result);
     } catch (err) {
       console.error(`Error fetching ${endpoint}:`, err);
@@ -61,7 +85,7 @@ export function useFetch<T>(
     fetchData();
   }, [fetchData]);
 
-  return { data, isLoading, error, refetch: fetchData };
+  return { data, isLoading, error, refetch: () => fetchData(true) };
 }
 
 /**

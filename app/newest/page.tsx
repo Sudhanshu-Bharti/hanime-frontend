@@ -3,6 +3,7 @@ import { useNewestAnime } from '@/hooks/useAnimeData';
 import { AnimeCard } from '@/components/shared/AnimeCard';
 import { ErrorMessage } from '@/components/shared/ErrorMessage';
 import { GridLoadingSkeleton } from '@/components/shared/Loading';
+import { PageLayout } from '@/components/shared/PageLayout';
 import { Calendar, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
@@ -10,8 +11,7 @@ export default function NewestPage() {
   const { items, isLoading, error, refetch } = useNewestAnime();
 
   return (
-    <main className="min-h-screen bg-[#0a0a0a] text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <PageLayout>
         {/* Header */}
         <div className="mb-8 animate-fadeIn">
           <Link 
@@ -27,7 +27,7 @@ export default function NewestPage() {
               <Calendar className="w-6 h-6 text-gray-400" />
             </div>
             <div>
-              <h1 className="text-3xl sm:text-4xl font-bold">
+              <h1 className="text-3xl sm:text-4xl font-bold font-display">
                 New This Week
               </h1>
               <p className="text-sm text-gray-500 mt-1">Freshly added to our collection</p>
@@ -55,11 +55,11 @@ export default function NewestPage() {
         {/* Results Grid */}
         {!isLoading && !error && items && items.length > 0 && (
           <div className="animate-fadeIn">
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            <div className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-2 sm:pb-0 sm:grid sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 sm:gap-4">
               {items.map((anime, index) => (
                 <div 
                   key={anime.id}
-                  className="animate-slideUp"
+                  className="animate-slideUp aspect-[2/3] w-[150px] sm:w-full snap-start"
                   style={{ animationDelay: `${index * 50}ms` }}
                 >
                   <AnimeCard item={anime} priority={index < 5} />
@@ -88,7 +88,6 @@ export default function NewestPage() {
             </Link>
           </div>
         )}
-      </div>
-    </main>
+    </PageLayout>
   );
 }
