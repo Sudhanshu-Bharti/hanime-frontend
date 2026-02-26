@@ -29,6 +29,12 @@ const getProxiedImageSrc = (src: ImageProps['src']): ImageProps['src'] => {
   return `/api/proxy-image?url=${encodeURIComponent(src)}`;
 };
 
+const getProxiedImageStringSrc = (src: string): string => {
+  const useProxy = process.env.NEXT_PUBLIC_USE_IMAGE_PROXY !== '0';
+  if (!useProxy || !shouldProxyImage(src)) return src;
+  return `/api/proxy-image?url=${encodeURIComponent(src)}`;
+};
+
 /**
  * A wrapper around Next.js Image component that handles CDN blocking issues
  * Falls back to unoptimized images if the CDN blocks Next.js optimization
@@ -95,8 +101,8 @@ export const SimpleImage: React.FC<SimpleImageProps> = ({
   className = '',
   ...props
 }) => {
-  const initialSrc = useMemo(() => getProxiedImageSrc(src), [src]);
-  const [imgSrc, setImgSrc] = useState(initialSrc);
+  const initialSrc = useMemo(() => getProxiedImageStringSrc(src), [src]);
+  const [imgSrc, setImgSrc] = useState<string>(initialSrc);
   const [error, setError] = useState(false);
 
   useEffect(() => {
